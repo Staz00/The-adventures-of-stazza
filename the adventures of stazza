@@ -3,7 +3,7 @@
 /*
 Author: Jhie Camacho
 Date: September 2014
-Purpose: Text based RPG game that uses the world's most powerful graphics chip, your IMAGINATION
+Purpose: Text based RPG
 */
 
 #include "stdafx.h"
