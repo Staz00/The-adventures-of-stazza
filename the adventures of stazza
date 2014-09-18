@@ -18,6 +18,7 @@ char choice = 48;
 string name;
 bool userMove = true;
 bool win = false;
+int itemNumber = 1;
 
 //character stats
 const int HITCHANCE = 80;
@@ -31,7 +32,7 @@ int count = 0;
 int hp = 75;
 int atk = 7;
 int def = 5;
-int gold = 100;
+int gold = 135;
 double hitChance = 80;
 string weapon = "Nothing";
 
@@ -57,10 +58,10 @@ int bowAtkStats = 5;
 int bowMissChance = 25;
 const int bowPrice = 90;
 
-string pot = "Potion";
-int potCost = 50;
-string clarity = "Clarity";
-int clarCost = 50;
+string pot = "Health Potion";
+int potCost = 35;
+string clarity = "Mana Potion";
+int clarCost = 35;
 int potHeal = 20;
 int mpHeal = 10;
 
@@ -84,6 +85,7 @@ void displayCharStats()
 {
 	bool confirm = false;
 	cout << "These are your stats:\n" << endl;
+	cout << name << endl;
 	cout << "Your starting HP is " << hp << endl;
 	cout << "Your starting Attack is " << atk << endl;
 	cout << "Your starting Defense is " << def << endl;
@@ -121,14 +123,13 @@ void encounter()
 {
 	int rng = rand() % 10 + 1;
 	int hitChance = rand()% 100 + 1;
-	int goldDrop = rand()% 5 + 25;
+	int goldDrop = rand()% 5 + 35;
 	int atkRng = rand()% 10 + atk;
 
 	system("cls");
 
 	char encChoice = 48;
 	bool mobAlive = true;
-	int menuNum = 1;
 	char itemChoice = 00;
 
 	cout << "You encountered a goblin" << endl;
@@ -232,8 +233,8 @@ void encounter()
 					cout << "ITEM INVENTORY" << endl;
 					for(int i = 0; i < itemsArray; i++)
 					{
-						cout << menuNum << ".) " << items[i] << endl;
-						menuNum++;
+						cout << itemNumber << ".) " << items[i] << endl;
+						itemNumber++;
 					}
 					cin >> itemChoice;
 					switch(itemChoice)
@@ -304,13 +305,19 @@ void encounter()
 		else
 		{
 			int atkRNG = rand() % 5 + mobsAtk;
-			if(rng >= 9)
+			if((mobsHp < 40) && (rng >= 5))
 			{
-				cout << "\nThe goblin has used self healing magic" << endl;
-				mobsHp = mobsHp + 10;
-				system("pause");
+					cout << "\nThe goblin has used self healing magic" << endl;
+					mobsHp = mobsHp + 10;
+					system("pause");
 			}
-			else if (rng <= 8)
+			else if(rng >= 8)
+			{
+				cout << "\nGoblin's attack missed" << endl;
+				system("pause");
+
+			}
+			else if (rng < 8)
 			{
 				int monsDamage = (mobsAtk + atkRNG)/2;
 				hp = hp - monsDamage;
@@ -319,12 +326,13 @@ void encounter()
 			}
 
 			//check if player is dead
-			if(hp < 0)
+			if(hp <= 0)
 			{
 				system("cls");
 				cout << "\nYou died :( You will be respawning in town" << endl;
 				cout << "As death penalty, you will lose 100G" << endl;
 				gold = gold - 100;
+				hp = HP;
 				if (gold < 0)
 				{
 					gold = 0;
@@ -347,13 +355,13 @@ void menuChoice()
 	cout << "I welcome you PLAYERS to the adventure of a lifetime!!!" << endl;
 	cout << "Using the most powerful graphics chip, the IMAGINATION" << endl;
 	cout << "I will take you on the best adventure an imagination can give you\n" << endl;
-	cout << "1.) New Game\n2.) Load Game" << endl;
+	cout << "1.) New Game\n2.) Load Game\n3.) Exit Game" << endl;
 	cout << "" << endl;
 	cout << "Enter the number of your selection" << endl;
 	cin >> choice;
 	
 	bool done = false;
-	do
+	while(done);
 	{
 		switch(choice)
 		{
@@ -372,22 +380,22 @@ void menuChoice()
 					break;
 				
 			case 51:
-				/*char closeYN;
+					char closeYN;
 					cout << "Are you sure you want to exit the game (Y/N)" << endl;
 					cin >> closeYN;
 					if((closeYN == 89) || (closeYN == 121))
 					{
 						done = true;
-						break;
+						exit(0);
 					}
 					else if ((closeYN == 78) || ( closeYN == 110))
 					{
 						choice = 48;
 						system("cls");
-						menuChoice();
-					}*/
+						return menuChoice();
+					}
 					done = true;
-					win = true;
+					//win = true;
 					break;
 			default: system("cls"); 
 					cout << "\nSorry, but " << choice << " is not a valid choice.\n";
@@ -396,7 +404,6 @@ void menuChoice()
 					break;
 		}
 	}
-	while(!done);
 }
 
 void buyWeapon()
@@ -405,7 +412,7 @@ void buyWeapon()
 	char back = 00;
 	bool invalid = true;
 	system("cls");
-
+	cout << "CURRENT GOLD: " << gold << "\n\n" << endl;
 	cout << "BUY WEAPON" << endl;
 	cout << "1.) Broadsword - 100" << endl;
 	cout << "2.) Claymore - 150" << endl;
@@ -507,7 +514,7 @@ void buyWeapon()
 			atk = atk + bowAtkStats;
 			hitChance = hitChance - bowMissChance;
 			gold = gold - bowPrice;
-			cout << "You have bought a Claymore!" << endl;
+			cout << "You have bought a Bow!" << endl;
 			if (gold < 0)
 			{
 				gold = 0;
@@ -543,16 +550,18 @@ void buyWeapon()
 	}
 
 	//option 4
-	else if((storeChoice == 52) && ((weapon == "Broadsword") || (weapon == "Claymore") || (weapon == "Bow")))
+	else if((storeChoice == 52) && ((weapon == "Broadsword") || (weapon == "Claymore") || (weapon == "Bow")) ||((storeChoice == 52) && (weapon == "Nothing")))
 	{
 		weaponLevel = 0;
 		system("cls");
 		char swapWeapons = 48;
+		cout << "CURRENT GOLD: " << gold << "\n\n" << endl;
 		cout << "Current weapon: " << weapon << endl;
 		cout << "Select the weapon you want to change to" << endl;
-		cout << "1.) Broadsword - " <<  endl;
-		cout << "2.) Claymore - " << endl;
-		cout << "3.) Bow - " << endl;
+		cout << "1.) Broadsword - " << bswordPrice <<  endl;
+		cout << "2.) Claymore - " << cmorePrice << endl;
+		cout << "3.) Bow - " << bowPrice<< endl;
+		cout << "4.) Exit" << endl;
 		cin >> swapWeapons;
 		switch(swapWeapons)
 		{
@@ -560,37 +569,45 @@ void buyWeapon()
 			case 49: 
 				if((weapon == "Nothing") && (gold >= bswordPrice))
 				{
+					system("cls");
+					cout << "You have switched to another weapon" << endl;
+
 					weapon = "Broadsword";
 					atk = ATK;
 					hitChance = HITCHANCE;
 					atk = atk + bswordAtkStats;
 					hitChance = hitChance + bswordMissChance;
 					gold = gold - bswordPrice;
+
 					displayCharStats();
-					system("cls");
-					townOptions();
 				}
 				else if((weapon == "Claymore") && (gold >= bswordPrice))
 				{
+					system("cls");
+					cout << "You have switched to another weapon" << endl;
+
 					weapon = "Broadsword";
 					atk = ATK;
 					hitChance = HITCHANCE;
 					atk = atk + bswordAtkStats;
 					hitChance = hitChance + bswordMissChance;
 					gold = gold - bswordPrice;
+
 					displayCharStats();
-					townOptions();
 				}
 				else if ((weapon == "Bow") && (gold >= bswordPrice))
 				{
+					system("cls");
+					cout << "You have switched to another weapon" << endl;
+
 					weapon = "Broadsword";
 					atk = ATK;
 					hitChance = HITCHANCE;
 					atk = atk + bswordAtkStats;
 					hitChance = hitChance + bswordMissChance;
 					gold = gold - bswordPrice;
+
 					displayCharStats();
-					townOptions();
 				}
 				else 
 				{
@@ -603,37 +620,45 @@ void buyWeapon()
 			case 50:
 				if((weapon == "Nothing") && (gold >= cmorePrice))
 				{
+					system("cls");
+					cout << "You have switched to another weapon" << endl;
+
 					weapon = "Claymore";
 					atk = ATK;
 					hitChance = HITCHANCE;
 					atk = atk + cmoreAtkStats;
 					hitChance = hitChance + cmoreMissChance;
 					gold = gold - cmorePrice;
+
 					displayCharStats();
-					system("cls");
-					townOptions();
 				}
 				else if((weapon == "Broadsword")  && (gold >= cmorePrice))
 				{
+					system("cls");
+					cout << "You have switched to another weapon" << endl;
+
 					weapon = "Claymore";
 					atk = ATK;
 					hitChance = HITCHANCE;
 					atk = atk + cmoreAtkStats;
 					hitChance = hitChance + cmoreMissChance;
 					gold = gold - cmorePrice;
+
 					displayCharStats();
-					townOptions();
 				}
 				else if ((weapon == "Bow") && (gold >= cmorePrice))
 				{
+					system("cls");
+					cout << "You have switched to another weapon" << endl;
+
 					weapon = "Claymore";
 					atk = ATK;
 					hitChance = HITCHANCE;
 					atk = atk + cmoreAtkStats;
 					hitChance = hitChance+ cmoreMissChance;
 					gold = gold - cmorePrice;
+
 					displayCharStats();
-					townOptions();
 				}
 				else 
 				{
@@ -646,37 +671,46 @@ void buyWeapon()
 			case 51:
 				if((weapon == "Nothing") && (gold >= bowPrice))
 				{
+					system("cls");
+					cout << "You have switched to another weapon" << endl;
+
 					weapon = "Bow";
 					atk = ATK;
 					hitChance = HITCHANCE;
 					atk = atk + bowAtkStats;
 					hitChance = hitChance + bowMissChance;
 					gold = gold - bowPrice;
+
 					displayCharStats();
-					system("cls");
-					townOptions();
+
 				}
 				else if((weapon == "Broadsword") && (gold >= bowPrice))
 				{
+					system("cls");
+					cout << "You have switched to another weapon" << endl;
+
 					weapon = "Bow";
 					atk = ATK;
 					hitChance = HITCHANCE;
 					atk = atk + bowAtkStats;
 					hitChance = hitChance - bowMissChance;
 					gold = gold - bowPrice;
+
 					displayCharStats();
-					townOptions();
 				}
 				else if ((weapon == "Claymore") && (gold >= bowPrice))
 				{
+					system("cls");
+					cout << "You have switched to another weapon" << endl;
+
 					weapon = "Bow";
 					atk = ATK;
 					hitChance = HITCHANCE;
 					atk = atk + bowAtkStats;
 					hitChance = hitChance - bowMissChance;
 					gold = gold - bowPrice;
+
 					displayCharStats();
-					townOptions();
 				}
 				else 
 				{
@@ -685,6 +719,8 @@ void buyWeapon()
 					return buyWeapon();
 				}
 				break;
+			case 52:
+				return buyWeapon();
 			default:
 				cout << "INVALID CHOICE" << endl;
 		}
@@ -694,8 +730,9 @@ void buyWeapon()
 		char merchChoice = 00;
 		char goBack = 00;
 		system("cls");
-		cout << "1.) " << pot << " - 50G" << endl;
-		cout << "2.) " << clarity << " - 50G" << endl;
+		cout << "CURRENT GOLD: " << gold << "\n\n" << endl;
+		cout << "1.) " << pot << " - " << potCost<< endl;
+		cout << "2.) " << clarity << " - " << clarCost << endl;
 		cout << "3.) " << "Exit" << endl;
 
 		cin >> merchChoice;
@@ -707,7 +744,7 @@ void buyWeapon()
 					if(gold >= potCost)
 					{
 						items[count] = pot;
-						gold = gold - 50;
+						gold = gold - potCost;
 						cout << "You have purchased " << items[0] << endl;
 					}
 					else
@@ -727,13 +764,13 @@ void buyWeapon()
 				if((count == 0) || (count == 1) || (count == 2) || (count == 3) || (count == 4))
 				{
 					
-					if(gold >= potCost)
+					if(gold >= clarCost)
 					{
 						items[count] = clarity;
-						gold = gold - 50;
+						gold = gold - clarCost;
 						cout << "You have purchased " << items[0] << endl;
 					}
-					else
+					else if (gold < clarCost)
 					{
 						cout << "You do not have enough gold" << endl;
 						system("pause");
@@ -745,35 +782,21 @@ void buyWeapon()
 					cout << "Inventory is full, cannot by more items" << endl;
 				break;
 			case 51:
-				cout << "Go to town? (Y/N)" << endl;
-				cin >> goBack;
-				if((goBack == 89) || (goBack == 121))
-				{
-					system("cls");
-					townOptions();
-					break;
-				}
-				else if((goBack == 78) || (goBack == 110))
-				{
-					return buyWeapon();;
-				}
-				else
-				{
-					cout << "INVALID INPUT; Please try again" << endl;
-				}
+				return buyWeapon();
 			default:
 				cout << "INVALID INPUT!" << endl;
 				return buyWeapon();
 				break;
 		}
-
 		cout << "These are your items in your inventory: " << endl;
 		for(int i = 0; i < itemsArray; i++)
 		{
-			cout << items[i]  << endl;
+			cout << itemNumber << ".) " << items[i] << endl;
+			itemNumber++;
 		}
 		system("pause");
-		townOptions();
+		itemNumber = 1;
+		buyWeapon();
 	}
 	else if(storeChoice == 54)
 	{
@@ -799,13 +822,13 @@ void buyWeapon()
 	{
 		system("cls");
 		cout << "INVALID CHOICE!!!" << endl;
-		townOptions();
+		return buyWeapon();
 	}
 	else
 	{
 		cout << "You already have a weapon. To change to another weapon, please choose option 4" << endl;
 		system("pause");
-		buyWeapon();
+		return buyWeapon();
 	}
 }
 
@@ -876,6 +899,7 @@ void blacksmith()
 
 void townOptions()
 {
+	char back = 00;
 	char yn = 00;
 	char townChoice = 48;
 	system("cls");
@@ -926,13 +950,25 @@ void townOptions()
 		case 52: system("cls");
 				charMove();
 				break;
-		case 53: system("cls");
+		case 53: 
+				system("cls");
+				
+				cout << "\nITEM INVENTORY" << endl;
+				for(int i = 0; i < itemsArray; i++)
+				{
+					cout << itemNumber << ".) " << items[i] << endl;
+					itemNumber++;
+				}
+				cout << "\n" << endl;
+				itemNumber = 1;
 				displayCharStats();
 				break;
-		case 54: choice = 48;
+		case 54: 
+				choice = 00;
 				system("cls");
 				menuChoice();
 				break;
+				
 		default: system("cls");
 				cout << "INVALID CHOICE !!! Please use the number of your selection!" << endl;
 				return townOptions();
@@ -1027,12 +1063,6 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	bool bossAlive = true; //boolean value to check if boss is still alive or not
 	menuChoice();
-
-	//[TODO: Game loop that checks if player has won]
-	//while(!win)
-	//{
-	//	menuChoice();
-	//}
 
 	return 0;
 }
