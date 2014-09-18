@@ -10,8 +10,6 @@ Purpose: Text based RPG game that uses the world's most powerful graphics chip, 
 #include <iostream>
 #include <string>
 #include <ctime>
-#include <conio.h>
-#include <windows.h>
 
 using namespace std;
 
