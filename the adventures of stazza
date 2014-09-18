@@ -33,7 +33,7 @@ int count = 0;
 int hp = 75;
 int atk = 7;
 int def = 5;
-int gold = 200;
+int gold = 100;
 double hitChance = 80;
 string weapon = "Nothing";
 
@@ -121,11 +121,10 @@ void displayCharStats()
 
 void encounter()
 {
-	srand(static_cast<unsigned int>(time(0)));
 	int rng = rand() % 10 + 1;
 	int hitChance = rand()% 100 + 1;
 	int goldDrop = rand()% 5 + 25;
-	//int monsterRng = rand()% 10 + 1;
+	int atkRng = rand()% 10 + atk;
 
 	system("cls");
 
@@ -160,14 +159,16 @@ void encounter()
 					}
 					else if((weapon == "Broadsword") && (hitChance <= 95))
 					{
-						mobsHp = mobsHp - atk;
-						cout << "You dealt " << atk << " to the enemy" << endl;
+						int damage = (atk + atkRng)/2;
+						mobsHp = mobsHp - damage;
+						cout << "You dealt " << damage << " to the enemy" << endl;
 						system("pause");
 					}
 					else if(weapon == "Claymore")
 					{
-						mobsHp = mobsHp - atk;
-						cout << "You dealt " << atk << " to the enemy" << endl;
+						int damage = (atk + atkRng)/2;
+						mobsHp = mobsHp - damage;
+						cout << "You dealt " << damage << " to the enemy" << endl;
 						system("pause");
 					}
 					else if((weapon == "Bow") && (hitChance > 55))
@@ -179,8 +180,9 @@ void encounter()
 					}
 					else if((weapon == "Bow") && (hitChance <= 55))
 					{
-						mobsHp = mobsHp - atk;
-						cout << "You dealt " << atk << " to the enemy" << endl;
+						int damage = (atk + atkRng)/2;
+						mobsHp = mobsHp - damage;
+						cout << "You dealt " << damage << " to the enemy" << endl;
 						system("pause");
 					}
 					else if ((weapon == "Nothing") && (hitChance > 80))
@@ -303,17 +305,18 @@ void encounter()
 		}
 		else
 		{
-			int atkRNG = rand() % 5 + 7;
+			int atkRNG = rand() % 5 + mobsAtk;
 			if(rng >= 9)
 			{
 				cout << "\nThe goblin has used self healing magic" << endl;
-				mobsHp = mobsHp + 5;
+				mobsHp = mobsHp + 10;
 				system("pause");
 			}
 			else if (rng <= 8)
 			{
-				hp = hp - atkRNG;
-				cout << "\nThe enemy has dealt " << atkRNG << " to you" << endl;
+				int monsDamage = (mobsAtk + atkRNG)/2;
+				hp = hp - monsDamage;
+				cout << "\nThe enemy has dealt " << monsDamage << " to you" << endl;
 				system("pause");
 			}
 
@@ -495,7 +498,7 @@ void buyWeapon()
 			cout << "You do not have enough gold" << endl;
 			system("pause");
 			system("cls");
-			townOptions();
+			return buyWeapon();
 		}
 	}
 	else if((storeChoice == 51) && (weapon == "Nothing"))
@@ -537,7 +540,7 @@ void buyWeapon()
 			cout << "You do not have enough gold" << endl;
 			system("pause");
 			system("cls");
-			townOptions();
+			return buyWeapon();
 		}
 	}
 
@@ -940,7 +943,6 @@ void townOptions()
 
 void charMove()
 {
-	srand(static_cast<unsigned int>(time(0)));
 	int rng = rand()%10+1;
 	char charMovement = 00;
 	char goBack = 00;
@@ -1025,7 +1027,6 @@ void charMove()
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-
 	bool bossAlive = true; //boolean value to check if boss is still alive or not
 	menuChoice();
 
